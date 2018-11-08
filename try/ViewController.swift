@@ -23,6 +23,7 @@ class ViewController: UIViewController {
             self.tableView.reloadData()
 //            self.tableView.layoutIfNeeded()
 //            self.loadViewIfNeeded()
+            self.view.layoutIfNeeded()
         }
     }
     ///布局改变后刷新tableView，必须加上，和cell里的layoutIfNeeded()、layoutSubviews()都不可缺少
@@ -31,6 +32,7 @@ class ViewController: UIViewController {
         print("-----viewDidLayoutSubviews------")
         tableView.reloadData()
     }
+    
 }
 
 private extension ViewController {
@@ -74,8 +76,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
             cell.didRefresh = { tempHeight in
                 if self.height != tempHeight {
                     self.height = tempHeight
-                    cell.layoutIfNeeded()
-                    tableView.reloadData()
+                    self.viewDidLayoutSubviews()
                 }
             }
             return cell

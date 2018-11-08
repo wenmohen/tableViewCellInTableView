@@ -57,7 +57,7 @@ extension OrderDetailSetMealTableViewCell: UITableViewDelegate,UITableViewDataSo
         return type == 0 ? foods.count : tips.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return type == 0 ? foods[section].dishes.count : tips[section].dishes.count
+        return type == 0 ? foods[section].dishes.count + 1 : tips[section].dishes.count + 1
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
@@ -73,7 +73,7 @@ extension OrderDetailSetMealTableViewCell: UITableViewDelegate,UITableViewDataSo
                 return UITableViewCell()
             }
             let dishes = type == 0 ? foods[indexPath.section].dishes : tips[indexPath.section].dishes
-            let dish = dishes[indexPath.row]
+            let dish = dishes[indexPath.row - 1]
             let quantity = dish.quantity ?? ""
             let quantityStr = quantity.count > 0 ? " (\(quantity))" : ""
             cell.titleLabel.text = (dish.name ?? "") + quantityStr
@@ -82,6 +82,20 @@ extension OrderDetailSetMealTableViewCell: UITableViewDelegate,UITableViewDataSo
             return cell
         }
 
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if type == 0 {
+            if indexPath == [foods.count - 1,foods[indexPath.section].dishes.count] {
+                tableViewConstraintHeight.constant = tableView.contentSize.height
+                didRefresh?(tableViewConstraintHeight.constant)
+            }
+        }else {
+            if indexPath == [tips.count - 1,tips[indexPath.section].dishes.count] {
+                tableViewConstraintHeight.constant = tableView.contentSize.height
+                didRefresh?(tableViewConstraintHeight.constant)
+            }
+        }
     }
 }
 

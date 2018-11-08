@@ -13,13 +13,17 @@ class OrderDetailSetMealTableViewCell: UITableViewCell {
     
     @IBOutlet weak var tableViewConstraintHeight: NSLayoutConstraint!
     
-    var foods: [FoodEntity] = [] {
+    var foods: [FoodEntity] = []
+    var tips: [FoodEntity] = []
+    var type = 0 {
         didSet {
             tableView.reloadData()
             ///立即刷新
             layoutIfNeeded()
         }
     }
+    
+    var didRefresh:((_ height: CGFloat)->())?
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
@@ -32,7 +36,10 @@ class OrderDetailSetMealTableViewCell: UITableViewCell {
     }
     override func layoutSubviews() {
         super.layoutSubviews()
+        print(tips.count)
+        print("-----layoutSubviews------")
         tableViewConstraintHeight.constant = tableView.contentSize.height
+        didRefresh?(tableViewConstraintHeight.constant)
     }
     
 }
@@ -47,10 +54,10 @@ private extension OrderDetailSetMealTableViewCell {
 
 extension OrderDetailSetMealTableViewCell: UITableViewDelegate,UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return foods.count
+        return type == 0 ? foods.count : tips.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return foods[section].dishes.count
+        return type == 0 ? foods[section].dishes.count : tips[section].dishes.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
@@ -58,14 +65,14 @@ extension OrderDetailSetMealTableViewCell: UITableViewDelegate,UITableViewDataSo
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "OrderDetailSetMealTitleTableViewCell") as? OrderDetailSetMealDishesTableViewCell else {
                 return UITableViewCell()
             }
-            cell.titleLabel.text = foods[indexPath.section].name
+            cell.titleLabel.text = type == 0 ? foods[indexPath.section].name : tips[indexPath.section].name
 
             return cell
         }else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "OrderDetailSetMealDishesTableViewCell") as? OrderDetailSetMealDishesTableViewCell else {
                 return UITableViewCell()
             }
-            let dishes = foods[indexPath.section].dishes
+            let dishes = type == 0 ? foods[indexPath.section].dishes : tips[indexPath.section].dishes
             let dish = dishes[indexPath.row]
             let quantity = dish.quantity ?? ""
             let quantityStr = quantity.count > 0 ? " (\(quantity))" : ""
